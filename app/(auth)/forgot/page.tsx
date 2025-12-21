@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { isValidEmail } from "../../utils/validator";
 import toast from "react-hot-toast";
 import { useGlobalContext } from "../../context/GlobalContext";
-
+import { publicApi } from "@/app/utils/axios";
 export default function Page() {
   const {email,setEmail}=useGlobalContext();
   const [loading, setLoading] = useState(false);
@@ -34,21 +34,8 @@ export default function Page() {
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("email", email);
-
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/reset-password`,
-        {
-          method: "POST",
-          body: formDataToSend,
-        }
-      );
-
-      if (!res.ok) {
-        const error = await res.json().catch(() => ({}));
-        throw new Error(error.message || "Failed to send reset link");
-      }
-
-      const data = await res.json();
+      const res = await publicApi.post("/api/v1/auth/reset-password", formDataToSend);
+      const data = res.data;
       console.log("Reset response:", data);
       toast.success("Password reset link sent! Check your email ");
       router.push("/verify-otp");
@@ -70,12 +57,12 @@ export default function Page() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <input
-            type="email"
+            type="text"
             placeholder="Enter your email"
             value={email}
             onChange={handleChange}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-            required
+            
             disabled={loading}
           />
 
@@ -88,7 +75,7 @@ export default function Page() {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-center text-blue-600 cursor-pointer">
           <button
             type="button" 
             onClick={() => router.push("/")} 

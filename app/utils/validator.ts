@@ -5,7 +5,8 @@ const NEPALI_PHONE_REGEX = /^(?:98|97)\d{8}$/;
 
 // Regex for standard email validation
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+// medium level password
+const medium_strong= /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,20}$/
 /**
  * Validate Nepali phone number
  * @param phone - phone number as string
@@ -14,7 +15,9 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function isValidNepaliPhone(phone: string): boolean {
   return NEPALI_PHONE_REGEX.test(phone);
 }
-
+export function isMediumStrongPassword(password: string): boolean {
+  return medium_strong.test(password);
+}
 /**
  * Validate email
  * @param email - email string

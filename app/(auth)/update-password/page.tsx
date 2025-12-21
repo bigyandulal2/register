@@ -1,29 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { publicApi } from "@/app/utils/axios";
+import { useGlobalContext } from "@/app/context/GlobalContext";
+
 export default function ResetPasswordPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const router = useRouter();
+  const {email,otp}=useGlobalContext();
 
-  function handleSubmit(e: React.FormEvent) {
+  async  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match");
+      toast.error("Passwords do not match");
       return;
     }
 
-    if (newPassword.length < 6) {
-      alert("Password must be at least 6 characters");
-      return;
+    try{
+      const form=new FormData();
+      form.append("email",email);
+      form.append("password",confirmPassword);
+      form.append("otp",otp);
+      const res = await publicApi.post("/api/v1/auth/update-password", form);
+    
+      toast.success("Password reset successful!");
+      router.push("/");
+
+
+    }
+    catch(err:any){
+         toast.error(err.response.data.message ||"something went wrong ");
+
     }
 
-    // Add your API call here later 
-    toast.success("Password reset successful!");
-    router.push("/login");
   }
 
   return (
@@ -42,7 +55,7 @@ export default function ResetPasswordPage() {
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Enter new password"
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
-              required
+       
             />
           </div>
 
@@ -56,7 +69,7 @@ export default function ResetPasswordPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirm new password"
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
-              required
+            
             />
           </div>
 

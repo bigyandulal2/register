@@ -3,8 +3,9 @@
 import { useGlobalContext } from "../context/GlobalContext";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { privateApi } from "../utils/axios";
 export default function ProfilePage() {
-  const { user, accessToken } = useGlobalContext();
+  const { user, accessToken,setAccessToken,setUser } = useGlobalContext();
   const router = useRouter();
 
   console.log("User:", user);
@@ -16,25 +17,27 @@ export default function ProfilePage() {
   }
 
   async function handleLogout() {
+    // Check if token exists in global context
+    if (!accessToken) {
+      toast.error("You are not logged in");
+      return;
+    }
+  
     try {
-      // Call your logout endpoint (adjust based on your auth method)
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-        headers: accessToken
-          ? { Authorization: `Bearer ${accessToken}` }
-          : {},
-      });
-
-      if (res.ok) {
-       toast.success("logged out successfull");
-        router.push("/");
-      } else {
-       toast.error("logged out faileddd");
-      }
-    } catch (error) {
+      // Call logout endpoint using privateApi
+      await privateApi.post("/api/v1/auth/logout");
+  
+      // Clear global context and local storage if needed
+      localStorage.removeItem("token");
+      setAccessToken(null);
+      setUser(null);
+  
+      toast.success("Logged out successfully");
+      router.push("/");
+  
+    } catch (error: any) {
       console.error("Logout error:", error);
-     
+      toast.error(error.response?.data?.message || "Logout failed");
     }
   }
 

@@ -5,7 +5,8 @@ import {  useState } from "react";
 
 import { isValidNepaliPhone,isValidEmail } from "../../utils/validator";
 import { useRouter } from "next/navigation";
-
+import { publicApi } from "@/app/utils/axios";
+import toast from "react-hot-toast";
 const initialState={
    name:"",
    email:"",
@@ -43,19 +44,17 @@ export default function SignupForm() {
 
     // sending form data to the backend routes
     try{
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/register`, {
-        method: "POST",
-        body: formDataToSend,
-      });
-      if(!res.ok){
-         throw new Error("something went wrong");
-      }
+      const res = await publicApi.post("/api/v1/auth/register", formDataToSend);
+            // Axios automatically returns JSON in res.data
+     const data = res.data;
       setLoading(false);
-      const data=await res.json();
+     toast.success("successfully register,please login again")
       console.log(data);
+      router.push("/");
 
     }
-    catch(error){
+    catch(error:any){
+      toast.error(error.response?.data?.message || "Invalid credentials");
   console.log("error here causing is why let you know",error);
    setLoading(false);
 

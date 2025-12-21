@@ -6,6 +6,7 @@ import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useGlobalContext } from "../context/GlobalContext";
+import { publicApi } from "../utils/axios";
 export default function LoginForm() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -19,49 +20,45 @@ export default function LoginForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-
+  
     if (!formData.email || !formData.password) {
       toast.error("Please fill all fields");
       setLoading(false);
       return;
     }
-
+  
     if (!isValidEmail(formData.email)) {
       toast.error("Invalid email format");
       setLoading(false);
       return;
     }
-
+  
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("email", formData.email);
       formDataToSend.append("password", formData.password);
-
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/login`,
-        {
-          method: "POST",
-          body: formDataToSend,
-        }
-      );
-
-      if (!res.ok) throw new Error("Login failed");
-     const data=await res.json();
-
-     setAccessToken(data.access_token);
-     setUser(data.user);
-     console.log("data hereeeee",data);
-      
+  
+      const res = await publicApi.post("/api/v1/auth/login", formDataToSend);
+  
+      // Axios automatically returns JSON in res.data
+      const data = res.data;
+  
+      setAccessToken(data.access_token);
+       localStorage.setItem("token",data.access_token);
+      setUser(data.user);
+      console.log("data here", data);
+  
       toast.success("Logged in successfully");
-      router.push("/user")
-      
-    } catch (err) {
+      router.push("/user");
+  
+    } catch (err: any) {
       console.log(err);
-      toast.error("Invalid credentials");
+      toast.error(err.response?.data?.message || "Invalid credentials");
     } finally {
       setLoading(false);
     }
   }
+  
 
   return (
     <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
@@ -129,14 +126,14 @@ export default function LoginForm() {
         {/* Signup */}
         <p className="text-center text-sm">
           Don’t have an account?{" "}
-          <span className="cursor-pointer font-semibold text-black hover:underline" onClick={()=>router.push("/signup")}>
+          <span className="cursor-pointer text-green-600  font-extrabold underline pb-4 text-black hover:underline" onClick={()=>router.push("/signup")}>
             Sign up
           </span>
         </p>
         {/* forgot password */}
         <p className="text-center text-sm">
           Forgot password?{" "}
-          <span className="cursor-pointer font-semibold text-black hover:underline" onClick={()=>router.push("/forgot")}>
+          <span className="cursor-pointer font-semibold text-red-600  underline" onClick={()=>router.push("/forgot")}>
             forgot
           </span>
         </p>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import toast from "react-hot-toast";
 import { useGlobalContext } from "../../context/GlobalContext";
-
+import { publicApi } from "@/app/utils/axios";
 export default function VerifyOTP() {
   const {email,setEmail,otp,setOtp}=useGlobalContext();
   const [loading, setLoading] = useState(false);
@@ -14,7 +14,7 @@ export default function VerifyOTP() {
     e.preventDefault();
 
     if (!email || !otp) {
-      toast.error("Please fill in both fields");
+      toast.error("Please fill the otp");
       return;
     }
 
@@ -29,23 +29,13 @@ export default function VerifyOTP() {
       const formDataToSend=new FormData();
       formDataToSend.append("email",email);
       formDataToSend.append("otp",otp);
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/verify-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
-      });
-
-      if (!res.ok) {
-        const error = await res.json().catch(() => ({}));
-        throw new Error(error.message || "Invalid OTP");
-      }
-
+      await publicApi.post("/api/v1/auth/verify-otp", formDataToSend);
       toast.success("OTP verified successfully! 🎉");
      router.push("/update-password");
        
      
     } catch (err: any) {
-      toast.error(err.message || "Verification failed");
+      toast.error(err.response.data.message|| "Verification failed");
     } finally {
       setLoading(false);
     }
@@ -92,7 +82,7 @@ export default function VerifyOTP() {
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))} // Only numbers
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg text-center text-2xl font-mono tracking-widest  transition"
-                required
+              
               />
             </div>
 
