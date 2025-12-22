@@ -46,7 +46,7 @@ export default function LoginForm() {
       setAccessToken(data.access_token);
        localStorage.setItem("token",data.access_token);
       setUser(data.user);
-      console.log("data here", data);
+     
   
       toast.success("Logged in successfully");
       router.push("/user");

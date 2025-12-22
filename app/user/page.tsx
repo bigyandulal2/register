@@ -8,8 +8,7 @@ export default function ProfilePage() {
   const { user, accessToken,setAccessToken,setUser } = useGlobalContext();
   const router = useRouter();
 
-  console.log("User:", user);
-  console.log("Access Token:", accessToken);
+ 
 
   // Show nothing or a loader while checking auth (optional: add a loading state later)
   if (!user) {
@@ -82,6 +81,13 @@ export default function ProfilePage() {
           >
             Logout
           </button>
+          <button
+            onClick={()=>router.push("/photo")}
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-4 rounded-xl transition duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+          >
+            photo
+          </button>
+           
         </div>
       </div>
     </div>

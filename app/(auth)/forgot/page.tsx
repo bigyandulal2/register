@@ -36,7 +36,7 @@ export default function Page() {
       formDataToSend.append("email", email);
       const res = await publicApi.post("/api/v1/auth/reset-password", formDataToSend);
       const data = res.data;
-      console.log("Reset response:", data);
+      // console.log("Reset response:", data);
       toast.success("Password reset link sent! Check your email ");
       router.push("/verify-otp");
       

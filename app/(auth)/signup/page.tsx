@@ -49,13 +49,13 @@ export default function SignupForm() {
      const data = res.data;
       setLoading(false);
      toast.success("successfully register,please login again")
-      console.log(data);
+      // console.log(data);
       router.push("/");
 
     }
     catch(error:any){
       toast.error(error.response?.data?.message || "Invalid credentials");
-  console.log("error here causing is why let you know",error);
+  // console.log("error here causing is why let you know",error);
    setLoading(false);
 
     }
