@@ -32,10 +32,10 @@ export default function Page() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!formData.sub_category_id || !formData.min_price || !formData.max_price) {
-      toast.error("Please fill up the form");
-      return;
-    }
+    // if (!formData.sub_category_id || !formData.min_price || !formData.max_price) {
+    //   toast.error("Please fill up the form");
+    //   return;
+    // }
 
     const formToSend = new FormData();
     formToSend.append("category_id", formData.category_id);
